@@ -42,7 +42,7 @@ function toggle_wifi () {
 }
 
 function current_connection () {
-  currssid=$(iwgetid -r)
+  currssid=$(/sbin/iwgetid -r)
   [[ "$currssid" != '' ]] && currcon="Disconnect from \"$currssid\"" || currcon=""
   echo $currcon
 }
@@ -72,7 +72,7 @@ function menu () {
 
 function rofi_cmd () {
   # don't repeat lines with uniq -u
-  echo -e "$1" | uniq -u | wofi --show dmenu --insensitive -p "Network connection" --style "$DIR/wofi-font.css" --cache /dev/null
+  echo -e "$1" | uniq -u | rofi -dmenu -i -p "Network connection"
 }
 
 function rofi_menu () {
@@ -125,7 +125,7 @@ function main () {
       nmcli radio wifi on
 
     elif [[ "$OPS" == "VPN: "* ]]; then
-      name=$(echo "$OPS"  | cut -d'"' -f 2)
+      name=$(echo "$OPS" | cut -d'"' -f 2)
       if [[ "$OPS" =~ "Connect" ]]; then
         echo "Connect VPN $name"
         nmcli connection up "$name"
@@ -161,7 +161,7 @@ function main () {
           nmcli connection up "$CHSSID"
       else
         if [[ "$OPS" =~ "WPA2" ]] || [[ "$OPS" =~ "WEP" ]]; then
-          WIFIPASS=$(echo -en "" | wofi --show dmenu --password -p "PASSWORD" --lines=0)
+          WIFIPASS=$(echo -en "" | rofi -dmenu --password -p "PASSWORD" --lines=0)
           if [ -z "$WIFIPASS" ]; then
             exit 0
           fi
